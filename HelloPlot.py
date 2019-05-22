@@ -1,4 +1,3 @@
-#update
 import pandas as pd
 from matplotlib import pyplot as plt
 v1 = [ 1,2,3,4,5,6]
