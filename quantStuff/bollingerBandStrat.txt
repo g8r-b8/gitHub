@@ -1,0 +1,37 @@
+def initialize(context):
+    set_benchmark(sid(24))
+    aapl=sid(24)
+    schedule_function(ma_crossover_handling, date_rules.every_day(), time_rules.market_open(hours=1))
+    
+    
+def ma_crossover_handling(context, data):
+    myaapl=sid(24)
+    hist = data.history(myaapl, 'price', 50, '1d')
+    #log.info(hist.head())
+    #sma_50 = hist.mean()
+    #sma_20 = hist[-20:].mean()
+    
+    mean = hist.mean()
+    std = hist.std()
+    
+    
+    cur_price = data.current(myaapl,'price')
+    
+    #create variability with width of bands
+    mult = 3.0
+    
+    upper_band = mean + (mult*std)
+    lower_band = mean - (mult*std)
+    
+ 
+    open_orders = get_open_orders()
+    
+    if cur_price<lower_band:
+        if myaapl not in open_orders:
+            order_target_percent(myaapl, 1.0)
+       
+    elif cur_price>upper_band:
+        if myaapl not in open_orders:
+            order_target_percent(myaapl, -0.33)
+        
+    record(leverage = context.account.leverage)
