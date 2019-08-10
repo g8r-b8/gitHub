@@ -1,0 +1,40 @@
+def initialize(context):
+    set_benchmark(sid(24))
+    context.aapl=sid(24)
+    ticker_tape = []
+    context.TakeProfitPct = 0.25
+    context.StopLossPct = 0.02
+    schedule_function(ma_crossover_handling, date_rules.every_day(), time_rules.market_open(hours=1))
+    
+    
+    
+def ma_crossover_handling(context, data):
+    hist = data.history(context.aapl, 'price', 5, '1d')
+   
+    #log.info(hist.head())
+
+    my_simple_indicator=1- (hist[-4]/hist[0])
+    print(my_simple_indicator)
+    record(bologna = my_simple_indicator)
+    
+    
+    
+    
+    open_orders = get_open_orders()
+
+    #if hist[0]>hist[-1]:
+        #order_target_percent(context.aapl, 0.33)
+    
+    if hist[0]>hist[-1]>hist[-2]:
+        order_target_percent(context.aapl, 0.66)
+   
+    elif hist[0]>hist[-1]>hist[-2]>hist[-3]:
+        order_target_percent(context.aapl, 1.0)
+    
+     
+    elif hist[0]<hist[-1]<hist[-2]:
+        if context.aapl not in open_orders:
+            order_target_percent(context.aapl, -0.33)
+    
+    else:
+        order_target_percent(context.aapl, 0.0)
