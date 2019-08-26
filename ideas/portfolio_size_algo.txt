@@ -1,0 +1,1 @@
+determine portfolio ratio of stocks and bonds based off of sentdex sentiment analysis of top 500 stocks, find some kinda avg you deem appropriate, and the shittier the market sentimwnt is the more money i put in bonds!!!
