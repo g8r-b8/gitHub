@@ -1,0 +1,41 @@
+public class Solution {
+
+    // Complete the solve function below.
+    static double solve(int[] balls) {
+
+    double ans = 0.0;
+        for(int e : balls){
+            double solo = e*.5;
+            
+            ans += solo;
+        }
+    return ans;
+    }
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        int ballsCount = scanner.nextInt();
+        scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
+
+        int[] balls = new int[ballsCount];
+
+        for (int ballsItr = 0; ballsItr < ballsCount; ballsItr++) {
+            int ballsItem = scanner.nextInt();
+            scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
+            balls[ballsItr] = ballsItem;
+        }
+
+        double result = solve(balls);
+
+        bufferedWriter.write(String.valueOf(result));
+        bufferedWriter.newLine();
+
+        bufferedWriter.close();
+
+        scanner.close();
+    }
+}
+
