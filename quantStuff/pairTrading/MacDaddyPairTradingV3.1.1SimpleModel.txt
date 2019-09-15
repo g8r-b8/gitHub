@@ -1,0 +1,161 @@
+import talib
+import pandas as pd
+
+indicator_list = []
+normalized_list = []
+
+def initialize(context):
+    gold = symbol("GLD")
+    
+    set_benchmark(gold)
+    #context.StopLossPct = 0.02
+   
+    aapl=sid(24)
+    schedule_function(ma_crossover_handling, date_rules.every_day(), time_rules.market_open(hours=4))
+    
+
+    
+    
+def ma_crossover_handling(context, data):
+  #  myaapl=sid(24)
+    silver = symbol("SLV")
+    gold = symbol("GLD")
+   
+    time_period = 30
+
+
+    gold_price = data.history(gold, 'price', time_period, '1d')
+    silver_price = data.history(silver, 'price', time_period, '1d')
+    
+    
+
+    cur_gold_price = data.current(gold,'price')
+    cur_silver_price = data.current(silver,'price')
+    
+    
+    my_gold_indicator= 1- (gold_price[-1]/gold_price[0])
+    my_gold_indicatorx100 = my_gold_indicator * 100
+    #print(my_simple_indicatorx100)
+    
+    my_silver_indicator= 1- (silver_price[-1]/silver_price[0])
+    my_silver_indicatorx100 = my_silver_indicator * 100
+    
+    #record(gold = my_gold_indicatorx100)
+    #record(silver = my_silver_indicatorx100)
+    
+    difference_indicator = my_gold_indicator - my_silver_indicator
+    
+    
+    gold_price_shifted_left = gold_price.head(time_period-1)
+    silver_price_shifted_left = silver_price.head(time_period-1)
+    
+    gold_price_shifted_right = gold_price.tail(time_period-1)
+    silver_price_shifted_right = silver_price.tail(time_period-1)
+    
+    
+    #TODO Must subtract one somehow
+    #series_gold_indicator = (gold_price_shifted_left.rsub(gold_price_shifted_right))
+    #series_silver_indicator =  (silver_price_shifted_left.rdiv(silver_price_shifted_right))
+    #print(gold_price_shifted_left.describe())
+    #print(gold_price_shifted_right.describe())
+    
+    
+    
+    #series_difference_indicator = series_gold_indicator.rsub(series_silver_indicator)
+    
+    #indicator_std = series_difference_indicator.std()
+    
+
+    #print(indicator_std)
+    
+    indicator_list= []
+    
+    #print(series_gold_indicator.describe())
+    
+    for i in range(0,time_period-1):
+        prev_gold = gold_price_shifted_right.get_value(i)
+        cur_gold = gold_price_shifted_left.get_value(i)
+        gold_indicator_val = (prev_gold/cur_gold)
+        print(gold_indicator_val)
+        
+        
+        prev_silver = silver_price_shifted_right.get_value(i)
+        cur_silver = silver_price_shifted_left.get_value(i)
+        #print("***")
+        #print(prev_silver)
+        
+        #print(cur_silver)
+        #print("***")
+        silver_indicator_val = (prev_silver/cur_silver)
+        print(silver_indicator_val)
+        
+        indicator_val = gold_indicator_val - silver_indicator_val
+        
+        indicator_list.insert(0,indicator_val)
+        #print(type(indicator_list))
+        if(len(indicator_list)>time_period):
+            indicator_list.pop(time_period)
+            
+        #for e in indicator_list:
+            #print(e)
+        #print("**************")
+        
+        indicator_series = pd.Series(indicator_list)
+    
+
+    #print("*")    
+    #print(time_period)
+    #print(len(indicator_series))
+    #print("*")
+    
+    if(len(indicator_series)>=time_period-1):
+        
+        
+        indicator_std = indicator_series.std()
+        indicator_mean = indicator_series.mean()
+        
+        
+       
+
+        #print(type(gold_price))
+
+        open_orders = get_open_orders()
+
+        mult = 2
+        
+        limit = indicator_std*mult
+        
+        scalar = 1
+        
+        upper_band = limit
+        lower_band = (-1.0*limit)
+
+        #print(limit)
+
+        #print(difference_indicator)
+        
+        current_indicator_val = indicator_series.get_value(0)
+        
+        record(top = upper_band, bottom = lower_band)
+        
+
+
+        record(difference = current_indicator_val)
+        
+        #print(indicator_std)
+        #print(current_indicator_val)
+
+        if current_indicator_val >= upper_band:
+            #if gold or silver not in open_orders:
+                order_target_percent(gold, .5)
+                order_target_percent(silver, -.5)
+
+
+        elif current_indicator_val <= lower_band:
+            #if gold or silver not in open_orders:
+                order_target_percent(gold, 0.5)
+                order_target_percent(silver, -0.5)
+        
+        #elif current_indicator_val < upper_band * scalar and current_indicator_val > lower_band * scalar:
+            #order_target_percent(gold, 0.0)
+            #order_target_percent(silver, 0.0)

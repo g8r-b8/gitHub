@@ -1,0 +1,71 @@
+def initialize(context):
+    set_benchmark(sid(24))
+    context.aapl=sid(24)
+    
+    context.TakeProfitPct = 0.25
+    context.StopLossPct = 0.02
+    schedule_function(ma_crossover_handling, date_rules.every_day(), time_rules.market_open(hours=1))
+   
+    
+    
+    
+def ma_crossover_handling(context, data):
+    
+    hist = data.history(context.aapl, 'price', 10, '1d')
+   
+    #log.info(hist.head())
+
+    my_simple_indicator= 1.00- (hist[-1]/hist[0])
+    my_simple_indicatorx100 = my_simple_indicator * 100.00
+    #print(my_simple_indicatorx100)
+    
+    record(price_action = my_simple_indicatorx100)
+    
+    my_volatility_indicator = my_simple_indicatorx100 *1.00
+    
+    #making another indicator, if simple indicator is negative, multiply by neg neg 2
+    if my_simple_indicator < 0:
+        my_volatility_indicator = my_volatility_indicator * (-2.00)
+ 
+        
+    record(volatility_indicator = my_volatility_indicator)
+        
+    
+
+    cur = hist[0]
+    
+    openList = data.history(context.aapl, 'open', 50, '1d')
+    closedList = data.history(context.aapl, 'close', 50, '1d')
+    lowList = data.history(context.aapl, 'low', 50, '1d')
+    highList = data.history(context.aapl, 'high', 50, '1d')
+    
+    shiftOpen = openList
+    shiftOpen.truncate(1, 49)
+    
+    shiftClosed = closedList
+    shiftClosed.truncate(1, 49)
+    
+    shiftHigh = highList
+    shiftHigh.truncate(1, 49)
+    
+    shiftLow = lowList
+    shiftLow.truncate(1, 49)
+    
+    HA_close = (1.00/4.00)*(openList+closedList+lowList+highList)
+    HA_open = (openList+closedList)/2.00
+    
+    
+    
+    
+    open_orders = get_open_orders()
+
+    if HA_close[0]>HA_close[-1]>HA_close[-2]>HA_close[-3]:
+        order_target_percent(context.aapl, 01.00)
+     
+     
+    elif HA_close[0]<HA_close[-1]<HA_close[-2]:
+        if context.aapl not in open_orders:
+            order_target_percent(context.aapl, -0.33)
+    
+    else:
+        order_target_percent(context.aapl, 0.0)
