@@ -1,8 +1,9 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class BinaryTree<T>{
-	BinaryNode<T> root = null;	
+	public BinaryNode<T> root = null;	
 	
 	private T nullSymbol = null;
 
@@ -76,6 +77,7 @@ public class BinaryTree<T>{
 		}
 	}
 
+
 	// This method will handle the non-null nodes in the iteration of nodes.get(i) in initFromBfsSequence method.
 	private void handleNonNullParentNode(List<BinaryNode<T>> nodes, 
 								int parentIndex, T[] seq){
@@ -108,16 +110,20 @@ public class BinaryTree<T>{
 	public int width(){
 		// TODO: Modify this method-body to compute and return the width 
 		// of the tree.
-		System.out.println("Feature not implemented yet, returning 0");
+		//System.out.println("Feature not implemented yet, returning 0");
 		if(root==null) return 0;
 		if(height()==1) return 1;
 		int lvl = 1;
 		int maxWidth = 0;
+
+		ArrayList<BinaryNode<T>> childList = new ArrayList<BinaryNode<T>>();
+	
 		while(lvl<=height()){
 	
-			ArrayList<BinaryNode<T>> childList = new ArrayList<BinaryNode<T>>();
 			//ArrayList<Integer> widthList = new ArrayList<Integer>();
-
+			ArrayList<BinaryNode<T>> subList = new ArrayList<BinaryNode<T>>();
+			int levelWidth = 0;						
+	
 			if(lvl==1){
 				int lvlOneWidth = 0;
 				if(root.getLeftNode()!=null){
@@ -132,20 +138,20 @@ public class BinaryTree<T>{
 			}
 			else{
 				for(BinaryNode<T> e : childList){
-					childList.clear();
-					int levelWidth = 0;							
 					if(e.getLeftNode()!=null){
-						childList.add(root.getLeftNode());
+						subList.add(e.getLeftNode());
 						levelWidth++;
 					}
 					if(e.getRightNode()!=null){
-						childList.add(root.getRightNode());
+						subList.add(e.getRightNode());
 						levelWidth++;
 					}
 					if(levelWidth>maxWidth){
 						maxWidth = levelWidth;
 					}
 				}
+				childList.clear();
+				childList = subList;
 			}
 			lvl++;
 		}
@@ -155,21 +161,35 @@ public class BinaryTree<T>{
 	public String breadthFirstTraverse(){
 		// TODO: Modify this method-body to return a string corresponding
 		// to the bread-first-traversal of the tree	
+		System.out.print("\n");
 		if(root == null) return "Null Tree";
 		else if(height()==1){return root.toString();}
 		int lvl = 1;
 		String ans = "";
-		else{
-			while(lvl<=height){
-			
-			//TODO: Everything...
-						
-		
+		if(height()>1){
 
+			Stack<BinaryNode<T>> stack = new Stack<BinaryNode<T>>();
+			stack.add(root);
+		//	int lvl = 1;
+			while(lvl<=height()){
+				Stack<BinaryNode<T>> children = new Stack<BinaryNode<T>>();
+				while(!stack.isEmpty()){
+					BinaryNode<T> tmp = stack.pop();
+					ans+=tmp.toString();		
+					ans+=" ";
+					if(tmp.getLeftNode()!=null){	
+						children.add(tmp.getLeftNode());
+					}
+					if(tmp.getRightNode()!=null){
+						children.add(tmp.getRightNode());
+					}
+				}
+				stack = children;
+				ans+="\n";
 				lvl++;
 			}
 		}	
-		return "";
+		return ans;
 	}
 
 	public String preOrderTraverse(){
@@ -262,14 +282,35 @@ public class BinaryTree<T>{
 		}
 
 		public String postOrderTraverse(){			
-			System.out.println("This method is yet to be implemented");
-			return "0";
+
+			StringBuilder stringBuffer = new StringBuilder();					
+			
+
+			//if( data == null){return stringBuffer.toString();}
+			
+			if(getLeftNode() !=null){ stringBuffer.append(leftNode.postOrderTraverse());}
+
+			stringBuffer.append(" " + data);
+		
+			if(getRightNode() !=null){stringBuffer.append(rightNode.postOrderTraverse());}
+			
+
+			return stringBuffer.toString();
+			
 		}
 
 		public String inOrderTraverse(){	
+			StringBuilder stringBuffer = new StringBuilder();					
+			
+			//if( data == null){return stringBuffer.toString();}
+			
+			if(getRightNode()!=null){stringBuffer.append(rightNode.inOrderTraverse());}
 
-			System.out.println("This method is yet to be implemented");
-			return "duh";
+			stringBuffer.append(" " + data);
+
+			if(getLeftNode()!=null){stringBuffer.append(leftNode.inOrderTraverse());}
+
+			return stringBuffer.toString();
 		}
 	}
 }
