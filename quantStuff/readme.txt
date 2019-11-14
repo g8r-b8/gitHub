@@ -1,0 +1,1 @@
+The following are a series of systematic trading models written in python in the Quantopian IDE. Helped me develop alogirthms quickly and try ideas that had been bothering me for some time, ubt now starting to realize it is a bit of a crutch. Moving on to live trading languages.
