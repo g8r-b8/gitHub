@@ -17,7 +17,7 @@ public class ScheduleTester<T extends Comparable<T>> {
 	public void addAndRemoveTester(){
 		UnboundedPriorityQueue<T> jared = new UnboundedPriorityQueue<T>();
 		Integer one = new Integer(1);
-		jared.add(one);
+		jared.enqueue(one);
 		assertEquals(one, jared.dequeue()); 
 	}
 
