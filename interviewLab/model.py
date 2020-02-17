@@ -43,7 +43,7 @@ bnb.fit(x,y)
 bnb.score(x,y)
 
 user_x = list(list())
-user_x = [int(i) for i in input(\n"Please input answers as array seprated with spaces.\nThere Should be 6 numbers total.\n Whether you own your own home (1), dont pay rent (2), or own a home(3)\nWhat your current credit balance is.\nLocation number(1-4)\nCredit card age.\nNumber of open lines of credit.\nNumber of dependents.\n").split()]
+user_x = [int(i) for i in input("\nPlease input answers as array seprated with spaces.\nThere Should be 6 numbers total.\n Whether you own your own home (1), dont pay rent (2), or own a home(3)\nWhat your current credit balance is.\nLocation number(1-4)\nCredit card age.\nNumber of open lines of credit.\nNumber of dependents.\n").split()]
 user_xprime=[user_x]
 
 #run test on current data
